@@ -1,5 +1,3 @@
-require_dependency "query"
-
 module AdvancedRoadmap
   module QueryPatch
     def self.included(base)
@@ -10,12 +8,28 @@ module AdvancedRoadmap
         def milestones(options = {})
           Milestone.find(:all,
                          :include => :project,
-                         :conditions => Query.merge_conditions(project_statement, options[:conditions]))
+                         :conditions => merge_conditions(project_statement, options[:conditions]))
         rescue ::ActiveRecord::StatementInvalid => e
           raise StatementInvalid.new(e.message)
         end
   
       end
     end
+
+	private
+	
+    def merge_conditions(*conditions)
+		segments = []
+
+		conditions.each do |condition|
+		  unless condition.blank?
+			sql = ActiveRecord::Base::sanitize(condition)
+			segments << sql unless sql.blank?
+		  end
+		end
+
+		"(#{segments.join(') AND (')})" unless segments.empty?
+    end
+
   end
 end
