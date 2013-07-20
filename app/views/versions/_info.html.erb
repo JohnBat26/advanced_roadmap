@@ -56,9 +56,46 @@
 <%- end -%>
 
 <%- if issues.present? -%>
+<script language="javascript">
+$(function() {
+    $('#tablecollapse').on('click', '.toggle', function () {
+        //Gets all <tr>'s  of greater depth
+        //below element in the table
+        var findChildren = function (tr) {
+            var depth = tr.data('depth');
+            return tr.nextUntil($('tr').filter(function () {
+                return $(this).data('depth') <= depth;
+            }));
+        };
+
+        var el = $(this);
+        var tr = el.closest('tr'); //Get <tr> parent of toggle button
+        var children = findChildren(tr);
+
+        //Remove already collapsed nodes from children so that we don't
+        //make them visible. 
+        var subnodes = children.filter('.expand');
+        subnodes.each(function () {
+            var subnode = $(this);
+            var subnodeChildren = findChildren(subnode);
+            children = children.not(subnodeChildren);
+        });
+
+        //Change icon and hide/show children
+        if (tr.hasClass('collapse')) {
+            tr.removeClass('collapse').addClass('expand');
+            children.hide();
+        } else {
+            tr.removeClass('expand').addClass('collapse');
+            children.show();
+        }
+        return children;
+    });
+});
+</script>
 <fieldset class="related-issues"><legend><%= l(:label_related_issues) %></legend>
 <%= form_tag({}) do %>
-<table class="list related-issues">
+<table class="list related-issues" id="tablecollapse">
   <thead>
     <%- width = 73
         if User.current.allowed_to?(:view_issue_estimated_hours, @project)
@@ -107,12 +144,11 @@
           begin_strike = "<strike>".html_safe
           end_strike = "</strike>".html_safe
         end -%>
-    <tr class="hascontextmenu <%= cycle("odd", "even") %>\">
-      <%- tab = "&nbsp;" * 3 * issue.parents_count -%>
+    <tr class="<%= "collapse".html_safe unless !(issue.has_childs?) %> hascontextmenu <%= cycle("odd", "even") %>\" data-depth="<%= issue.parents_count %>">
       <td class="checkbox"><%= check_box_tag("ids[]", issue.id) %></td>
-      <td align="left">
+      <td align="left" style="padding-left: <%= 2 * issue.parents_count %>em;">
         <div class="tooltip">
-          <%== tab %>
+		  <span class="toggle"></span>
           <font color="<%= color %>"><%= begin_strike %>
             <%= link_to_issue(issue, :project => (@project != issue.project)) %>
           <%= end_strike %></font>

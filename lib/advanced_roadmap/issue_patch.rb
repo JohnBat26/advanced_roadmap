@@ -30,6 +30,10 @@ module AdvancedRoadmap
         def parents_count
           parent.nil? ? 0 : 1 + parent.parents_count
         end
+		
+		def has_childs?
+		  !(children.empty?)
+		end
   
         def estimated_hours
           super if User.current.allowed_to?(:view_issue_estimated_hours, self.project)
