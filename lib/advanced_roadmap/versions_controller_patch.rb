@@ -4,7 +4,10 @@ module AdvancedRoadmap
   module VersionsControllerPatch
     def self.included(base)
       base.class_eval do
-  
+
+        helper :issues
+        include IssuesHelper
+
         def index_with_plugin
           index_without_plugin
           @totals = Version.calculate_totals(@versions)

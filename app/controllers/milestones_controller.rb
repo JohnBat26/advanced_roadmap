@@ -9,8 +9,10 @@ class MilestonesController < ApplicationController
 
   helper :custom_fields
   helper :projects
+  helper :issues
   include CustomFieldsHelper
   include ProjectsHelper
+  include IssuesHelper
    
   def show
     projects = {}

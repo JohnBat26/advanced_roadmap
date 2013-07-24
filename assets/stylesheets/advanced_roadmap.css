@@ -19,3 +19,18 @@
     width: 9px;
     display: inline-block;   
 }
+.ar_operations {
+    display: inline;
+}
+.ar_toolbar {
+    text-align: right;
+}
+
+div.tooltip {
+    display: inline;
+}
+
+div.tooltip:hover span.tip {
+    border-radius: 10px 10px 10px 10px;
+    box-shadow: 0 0 5px;
+}

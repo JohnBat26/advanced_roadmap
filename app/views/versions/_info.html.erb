@@ -56,44 +56,8 @@
 <%- end -%>
 
 <%- if issues.present? -%>
-<script language="javascript">
-$(function() {
-    $('#tablecollapse').on('click', '.toggle', function () {
-        //Gets all <tr>'s  of greater depth
-        //below element in the table
-        var findChildren = function (tr) {
-            var depth = tr.data('depth');
-            return tr.nextUntil($('tr').filter(function () {
-                return $(this).data('depth') <= depth;
-            }));
-        };
-
-        var el = $(this);
-        var tr = el.closest('tr'); //Get <tr> parent of toggle button
-        var children = findChildren(tr);
-
-        //Remove already collapsed nodes from children so that we don't
-        //make them visible. 
-        var subnodes = children.filter('.expand');
-        subnodes.each(function () {
-            var subnode = $(this);
-            var subnodeChildren = findChildren(subnode);
-            children = children.not(subnodeChildren);
-        });
-
-        //Change icon and hide/show children
-        if (tr.hasClass('collapse')) {
-            tr.removeClass('collapse').addClass('expand');
-            children.hide();
-        } else {
-            tr.removeClass('expand').addClass('collapse');
-            children.show();
-        }
-        return children;
-    });
-});
-</script>
 <fieldset class="related-issues"><legend><%= l(:label_related_issues) %></legend>
+<div class="ar_toolbar"><div class="expand tooltip ar_operations" id="op_expandall"><span class="toggle"></span><%= l(:label_expand_all) %></div>&nbsp;&nbsp;&nbsp;<div class="collapse tooltip ar_operations" id="op_collapseall"><span class="toggle"></span><%= l(:label_collapse_all) %></div></div>
 <%= form_tag({}) do %>
 <table class="list related-issues" id="tablecollapse">
   <thead>
@@ -147,24 +111,12 @@ $(function() {
     <tr class="<%= "collapse".html_safe unless !(issue.has_childs?) %> hascontextmenu <%= cycle("odd", "even") %>\" data-depth="<%= issue.parents_count %>">
       <td class="checkbox"><%= check_box_tag("ids[]", issue.id) %></td>
       <td align="left" style="padding-left: <%= 2 * issue.parents_count %>em;">
+        <span class="toggle"></span>
+        <%= link_to_issue(issue, :subject => false, :project => (@project != issue.project)) %>
         <div class="tooltip">
-		  <span class="toggle"></span>
-          <font color="<%= color %>"><%= begin_strike %>
-            <%= link_to_issue(issue, :project => (@project != issue.project)) %>
-          <%= end_strike %></font>
+          <span><font color="<%= color %>"><%= begin_strike %><%= issue.subject %><%= end_strike %></font></span>
           <span class="tip">
-            <table width="100%">
-              <tr><td colspan="2"><%= link_to_issue(issue) %></td></tr>
-              <%- if @project != issue.project -%>
-              <tr><td><strong><%= l(:field_project) %>:</strong></td><td><%= link_to_project(issue.project) %></td></tr>
-              <%- end -%>
-              <tr><td><strong><%= l(:field_status) %>:</strong></td><td><%= issue.status.name %></td></tr>
-              <tr><td><strong><%= l(:field_priority) %>:</strong></td><td><%= issue.priority.name %></td></tr>
-              <tr><td><strong><%= l(:field_assigned_to) %>:</strong></td><td><%= link_to_user(issue.assigned_to) %></td></tr>
-              <tr><td><strong><%= l(:field_category) %>:</strong></td><td><%= issue.category %></td></tr>
-              <tr><td><strong><%= l(:field_start_date) %>:</strong></td><td><%= format_date(issue.start_date) %></td></tr>
-              <tr><td width="40%"><strong><%= l(:field_due_date) %>:</strong></td><td width="60%"><%= format_date(issue.due_date) %></td></tr>
-            </table>
+            <%= render_issue_tooltip issue %>
           </span>
         </div>
       </td>
@@ -205,4 +157,72 @@ $(function() {
 </table>
 <% end %>
 </fieldset>
+<script language="javascript">
+
+function toggleIssue() {
+    return toggleIssueTr($(this));
+} 
+
+function toggleIssueTr(trigger) {
+    //Gets all <tr>'s  of greater depth
+    //below element in the table
+    var findChildren = function (tr) {
+        var depth = tr.data('depth');
+        return tr.nextUntil($('tr').filter(function () {
+            return $(this).data('depth') <= depth;
+        }));
+    };
+
+    var el = trigger;
+    var tr = el.closest('tr'); //Get <tr> parent of toggle button
+    var children = findChildren(tr);
+
+    //Remove already collapsed nodes from children so that we don't
+    //make them visible. 
+    var subnodes = children.filter('.expand');
+    subnodes.each(function () {
+        var subnode = $(this);
+        var subnodeChildren = findChildren(subnode);
+        children = children.not(subnodeChildren);
+    });
+
+    //Change icon and hide/show children
+    if (tr.hasClass('collapse')) {
+        tr.removeClass('collapse').addClass('expand');
+        children.hide();
+    } else {
+        tr.removeClass('expand').addClass('collapse');
+        children.show();
+    }
+    return children;
+}
+
+function collapseAll() {
+    var tr = $('#tablecollapse > tbody').children('tr');
+    
+    tr.each(function() {
+        if ($(this).hasClass('collapse')) {
+            toggleIssueTr($(this));
+        }
+    });
+}
+
+function expandAll() {
+    var tr = $('#tablecollapse > tbody').children('tr');
+    
+    tr.each(function() {
+        if ($(this).hasClass('expand')) {
+            toggleIssueTr($(this));
+        }
+    });
+}
+
+$(function() {
+    $('#tablecollapse').on('click', '.toggle', toggleIssue);
+    
+    $('#op_expandall').on('click', '.toggle', expandAll);
+    
+    $('#op_collapseall').on('click', '.toggle', collapseAll);
+});
+</script>
 <%- end -%>

@@ -1,6 +1,8 @@
 en:
   label_click_to_enlarge_reduce: "Click to enlarge/reduce"
+  label_collapse_all: "Collapse all"
   label_estimated_speed: "Estimated speed"
+  label_expand_all: "Expand all"
   label_f_day: "%{value} day"
   label_f_day_plural: "%{value} days"
   label_f_week: "%{value} week"
