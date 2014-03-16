@@ -110,7 +110,7 @@
         end -%>
     <tr class="<%= "collapse".html_safe unless !(issue.has_childs?) %> hascontextmenu <%= cycle("odd", "even") %>\" data-depth="<%= issue.parents_count %>">
       <td class="checkbox"><%= check_box_tag("ids[]", issue.id) %></td>
-      <td align="left" style="padding-left: <%= 2 * issue.parents_count %>em;">
+      <td class="subject" align="left" style="padding-left: <%= 2 * issue.parents_count %>em;">
         <span class="toggle"></span>
         <%= link_to_issue(issue, :subject => false, :project => (@project != issue.project)) %>
         <div class="tooltip">
@@ -161,7 +161,7 @@
 
 function toggleIssue() {
     return toggleIssueTr($(this));
-} 
+}
 
 function toggleIssueTr(trigger) {
     //Gets all <tr>'s  of greater depth
@@ -178,7 +178,7 @@ function toggleIssueTr(trigger) {
     var children = findChildren(tr);
 
     //Remove already collapsed nodes from children so that we don't
-    //make them visible. 
+    //make them visible.
     var subnodes = children.filter('.expand');
     subnodes.each(function () {
         var subnode = $(this);
@@ -199,7 +199,7 @@ function toggleIssueTr(trigger) {
 
 function collapseAll() {
     var tr = $('#tablecollapse > tbody').children('tr');
-    
+
     tr.each(function() {
         if ($(this).hasClass('collapse')) {
             toggleIssueTr($(this));
@@ -209,7 +209,7 @@ function collapseAll() {
 
 function expandAll() {
     var tr = $('#tablecollapse > tbody').children('tr');
-    
+
     tr.each(function() {
         if ($(this).hasClass('expand')) {
             toggleIssueTr($(this));
@@ -219,9 +219,9 @@ function expandAll() {
 
 $(function() {
     $('#tablecollapse').on('click', '.toggle', toggleIssue);
-    
+
     $('#op_expandall').on('click', '.toggle', expandAll);
-    
+
     $('#op_collapseall').on('click', '.toggle', collapseAll);
 });
 </script>
