@@ -17,13 +17,12 @@
 .toggle {
     height: 9px;
     width: 9px;
-    display: inline-block;   
+    display: inline-block;
 }
 .ar_operations {
     display: inline;
 }
 .ar_toolbar {
-    text-align: right;
 }
 
 div.tooltip {
