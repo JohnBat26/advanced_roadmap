@@ -1,7 +1,7 @@
 require "advanced_roadmap/gruff/pie"
 
 class MilestonesController < ApplicationController
-  
+
   menu_item :roadmap
   before_filter :find_project, :only => [:new, :create]
   before_filter :find_milestone, :only => [:show, :edit, :update, :destroy]
@@ -13,7 +13,7 @@ class MilestonesController < ApplicationController
   include CustomFieldsHelper
   include ProjectsHelper
   include IssuesHelper
-   
+
   def show
     projects = {}
     @milestone.versions.each do |version|
@@ -27,7 +27,7 @@ class MilestonesController < ApplicationController
     @more_than_one_project = (projects.length > 1)
     @totals = Version.calculate_totals(@milestone.versions)
   end
-  
+
   def new
     @projects = Project.find(:all).sort { |a, b| a.name.downcase <=> b.name.downcase }
     @versions = @project.versions
@@ -35,7 +35,7 @@ class MilestonesController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     render_404
   end
-  
+
   def create
     @milestone = @project.milestones.build(params[:milestone])
     @milestone.user_id = User.current.id
@@ -54,7 +54,7 @@ class MilestonesController < ApplicationController
   rescue ActiveRecord::RecordNotFound
     render_404
   end
-  
+
   def edit
     @projects = Project.find(:all).sort { |a, b| a.name.downcase <=> b.name.downcase }
     @versions = @project.versions
@@ -122,12 +122,12 @@ private
 
   def find_project
     @project = Project.find(params[:project_id])
-  rescue ActiveRecord::RecordNotFound
+    rescue ActiveRecord::RecordNotFound
     render_404
   end
 
   def find_milestone
-   @milestone = Milestone.find(params[:id])
+    @milestone = Milestone.find(params[:id])
     @project = @milestone.project
   rescue ActiveRecord::RecordNotFound
     render_404
