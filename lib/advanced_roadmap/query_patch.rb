@@ -10,7 +10,7 @@ module AdvancedRoadmap
                          :include => :project,
                          :conditions => merge_conditions(project_statement, options[:conditions]))
         rescue ::ActiveRecord::StatementInvalid => e
-          raise StatementInvalid.new(e.message)
+          raise Query::StatementInvalid.new(e.message)
         end
   
       end
